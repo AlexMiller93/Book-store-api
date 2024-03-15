@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     
     # installed packages
     'rest_framework',
+    'import_export',
     
 ]
 
@@ -91,6 +92,17 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'books_store_db',
+#             'USER': 'postgres',
+#             'PASSWORD': os.getenv("DB_PASSWORD"),
+#             'HOST': '127.0.0.1',
+#             'PORT': '5433',
+#         }
+#     }
 
 
 # Password validation

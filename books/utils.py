@@ -37,7 +37,7 @@ def divide_authors(lst:list) -> list:
             lst.append(author_2.strip())
             lst.remove(item)
             
-            return lst
+    return lst
         
 def clean_list(lst: list) -> list:
     
@@ -46,30 +46,31 @@ def clean_list(lst: list) -> list:
     возвращает список без пустых элементов
     """
     
-    # result = [lst.remove(item) for item in lst if len(item) == 0]
-    if len(lst):
-        for item in lst:
-            if len(item) == 0:
-                lst.remove(item)
+    if len(lst) > 1:
+        return list(filter(None, lst))
     return lst
 
 def is_correct_isbn(number:int) -> bool:
-    pass
-
-def get_useful_date_format(date:str) -> str:
-    # "2010-06-01T00:00:00.000-0700" -> "2010-06-01"
+    
+    """ 
+    Функция проверяет если в isbn все символы цифры
+    возвращает True/False
+    """
+    
+    try:
+        nums = int(number)
+        # TODO: можно проверить код isbn на корректность составления
+        return True
+    except Exception as e:
+        return False
+    
+def clean_date_format(date:str) -> str:
     
     """ 
     Функция изменяет формат даты и оставляет только дату без времени
     возвращает строку с датой
     """
     
-    import datetime as dt
+    date_lst = date.split('T')[0]
+    return ''.join(date_lst)
 
-    date = dt.datetime.strptime(date, "%Y-%m-%dT%I:%M:%S-%f")
-    # date = dt.datetime.strptime(date, "%d.%m.%Y")
-
-    new_date = date.strftime("%Y-%m-%d")
-    return new_date
-
-# ! анализ books.json
