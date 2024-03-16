@@ -1,6 +1,8 @@
 from django.db import models
 
 class Author(models.Model):
+    """ """
+    
     name = models.CharField(max_length=255, help_text='Имя автора книги')
     
     class Meta:
@@ -12,6 +14,8 @@ class Author(models.Model):
         return self.name
 
 class Category(models.Model):
+    """ """
+    
     title = models.CharField(max_length=255, blank=True, help_text='Наименование категории книг')
     subcategory = models.ForeignKey(
         'self', 
@@ -29,12 +33,7 @@ class Category(models.Model):
         return self.title
     
 class Book(models.Model):
-    
-    BOOK_STATUS = (
-        ('P', 'PUBLISH'), # True
-        ('M', 'MEAP'), # false
-    )
-        
+    """ """
     title = models.CharField(max_length=255, help_text='Название книги', )
     isbn = models.CharField(max_length=255, help_text='Код ISBN')
     pages_number = models.PositiveIntegerField(blank=True, help_text='Количество страниц в книге') # 0 -> None
@@ -58,9 +57,15 @@ class Book(models.Model):
         )
     
     class Meta:
-        ordering = ["title", "isbn"]
+        ordering = ["title", "publication_date"]
+        verbose_name = 'Книга'
         verbose_name_plural = 'Книги'
         
     def __str__(self):
         return f'Книга: {self.title} автора {self.authors} с категорией {self.categories}'
 
+    def authors_as_text(self):
+        return " | ".join(self.authors.values_list("label", flat=True))
+    
+    def categories_as_text(self):
+        return " | ".join(self.categories.values_list("label", flat=True))
