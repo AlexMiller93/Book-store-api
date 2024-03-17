@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     
     # my apps
     'books',
+    'accounts',
     
     # installed packages
     'rest_framework',
@@ -150,6 +151,15 @@ MEDIA_ROOT = "media_root"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+AUTH_USER_MODEL = 'accounts.User'
+
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'accounts.backends.JWTAuthentication',
+        ),
+    
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
