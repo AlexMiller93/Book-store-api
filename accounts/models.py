@@ -38,7 +38,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def token(self):
         return self._generate_jwt_token()
     
-    def get_username(self):
+    def get_full_name(self):
+        return self.username
+    
+    def get_short_name(self):
         return self.username
     
     def _generate_jwt_token(self):
