@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django.contrib.sites",
     
     # my apps
     'books',
@@ -50,8 +51,16 @@ INSTALLED_APPS = [
     
     # installed packages
     'rest_framework',
+    "rest_framework.authtoken",
     'rest_framework_simplejwt',
     'django_filters',
+    
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
     
 ]
 
@@ -63,6 +72,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -160,8 +171,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
         ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'accounts.backends.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'accounts.backends.JWTAuthentication',
         ),
     
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
@@ -174,4 +185,19 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": True,
+    "SIGNING_KEY": "complexsigningkey",  # generate a key and replace me
+    "ALGORITHM": "HS512",
+}
+
+SITE_ID = 1 
+
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False,
 }
