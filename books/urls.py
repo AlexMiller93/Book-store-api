@@ -5,13 +5,14 @@ from books.views import (
     get_current_category_view,
     get_book_view,
     BookList,
+    ListBooks,
     SingleBookView
     )
 
 app_name = "books"
 
 urlpatterns = [
-    path('api/books', BookList.as_view(), name='list_books'),
+    path('api/books', ListBooks.as_view(), name='list_books'),
     path('api/books/<int:pk>', SingleBookView.as_view(), name='list_books'),
     
     
