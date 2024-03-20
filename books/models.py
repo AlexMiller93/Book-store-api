@@ -1,7 +1,11 @@
+import os
+from django.core.files import File
 from django.db import models
 
+from urllib import request
+
 class Author(models.Model):
-    """ """
+    """ Модель Автор с полем имя """
     
     name = models.CharField(max_length=255, help_text='Имя автора книги')
     
@@ -14,7 +18,7 @@ class Author(models.Model):
         return self.name
 
 class Category(models.Model):
-    """ """
+    """ Модель Категория с полями название и подкатегория """
     
     title = models.CharField(max_length=255, blank=True, help_text='Наименование категории книг')
     subcategory = models.ForeignKey(
@@ -33,13 +37,20 @@ class Category(models.Model):
         return self.title
     
 class Book(models.Model):
-    """ """
+    """ 
+        Модель Категория с полями:
+            название, isbn, количество страниц, дата публикации, 
+            ссылка на фото, фотография, краткое описание, подробное описание, 
+            статус, авторы, категории 
+            
+        метод get_remote_image для сохранения фотографий в БД по url
+    """
     title = models.CharField(max_length=255, help_text='Название книги', )
     isbn = models.CharField(max_length=255, help_text='Код ISBN')
     pages_number = models.PositiveIntegerField(blank=True, help_text='Количество страниц в книге') # 0 -> None
     publication_date = models.DateField(blank=True, help_text='Дата публикации книги')
     image_link = models.URLField(blank=True, help_text='Ссылка на фото книги')
-    image = models.ImageField(blank=True, upload_to=f'{isbn}/', help_text='Фотография книги')
+    image = models.ImageField(blank=True, upload_to=f'images/{isbn}/', help_text='Фотография книги')
     summary = models.TextField(blank=True, help_text='Описание книги')
     description = models.TextField(blank=True, help_text='Подробное описание книги')
     status = models.CharField(max_length=8, help_text='Статус книги')
@@ -69,3 +80,13 @@ class Book(models.Model):
     
     def categories_as_text(self):
         return " | ".join(self.categories.values_list("label", flat=True))
+    
+    # метод для сохранения фотографий в БД по url
+    def get_remote_image(self):
+        if self.image_link and not self.image:
+            result = request.urlretrieve(self.image_link)
+            self.image.save(
+                os.path.basename(self.image_link), 
+                File(open(result[0], 'rb'))
+            )
+            self.save()
