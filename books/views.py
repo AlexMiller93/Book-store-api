@@ -1,161 +1,67 @@
-import random
-from rest_framework import status, permissions, generics
+from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework.views import APIView
+from rest_framework.decorators import action
 
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
 
 from books.models import Book, Category
 from books.serializers import BookSerializer, CategorySerializer
 
-# Create your views here.
-
-'''
-Реализовать ручки каталога.
-    - Получение всех книг.
-    - Получение всех книг определенной категории.
-    - Получение категорий текущего уровня и на 1 ниже.
-    - Получение конкретной книги.
-'''
-
-@api_view(['GET'])
-def get_all_books_view(request):
-    '''Получение всех книг'''
-    
-    books = Book.objects.all()
-    serializer = BookSerializer(books, many=True)
-    
-    return Response(
-        {
-            'success': True,
-            'books': serializer.data
-        }, status=status.HTTP_200_OK 
-    )
-        
-@api_view(['GET'])
-def get_books_one_category_view(request, category_id):
-    ''' Получение всех книг определенной категории '''
-    
-    category = Category.objects.get(id=category_id)
-    books = Book.objects.filter(categories=category)
-    serializer = BookSerializer(books, many=True)
-        
-    return Response(
-        {
-            'success': True,
-            'books': serializer.data
-        }, status=status.HTTP_200_OK 
-    )
-    
-@api_view(['GET'])
-def get_current_category_view(request, category_id):
-    ''' Получение категорий текущего уровня и на 1 ниже'''
-    
-    # книги категории и книг подкатегории 
-    
-    category = Category.objects.get(id=category_id) # Категории по id
-    subcategories = Category.objects.filter(title=category) # Подкатегории по категории
-    
-    if subcategories.exists():
-        # книги по данной категории + книги по подкатегориям
-        books = Book.objects.filter(Q(categories=category), Q(categories=subcategories))
-    
-    # книги по данной категории
-    books = Book.objects.filter(categories=category)
-    serializer = BookSerializer(books, many=True)
-    
-    return Response(
-            {
-                'success': True,
-                'books': serializer.data
-            }, status=status.HTTP_200_OK 
-        )
-    
-@api_view(['GET'])
-def get_book_view(request, book_id):
-    ''' Получение конкретной книги '''
-    
-    ''' На странице одной книги передавать список из 5 книг, которые находятся в той же категории'''
-    try:
-        book = Book.objects.get(id=book_id)
-        book_serializer = BookSerializer(book)
-        
-        # найти категорию книги
-        target_category = book.categories
-        
-        # если категорий больше одной
-        if len(target_category) > 1:
-            
-            target_category = random.choices(target_category)
-            
-        # если категорий больше одной
-        elif len(target_category) == 1:
-            
-            # найти 5 книг с той же категорией исключая текущую
-            same_category_books = Book.objects.filter(
-                categories=target_category).exclude(id=book_id)[:5]
-            
-        return Response(
-            {
-                'success': True,
-                'book': book_serializer.data,
-                'same_category_books': same_category_books,
-            }, status=status.HTTP_200_OK 
-        )
-    except Book.DoesNotExist:
-        return Response(
-            {
-                'message': 'У нас нет такой книги'
-            }, 
-            status = status.HTTP_404_NOT_FOUND
-        )
-
 # Class based views
-class ListBooks(APIView):
-    """ View для получения списка всех книг """
-    serializer_class = BookSerializer
-    permission_classes = [permissions.AllowAny]
+
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """ Viewset для получения списка всех категорий и одной категории """
     
-    def get_queryset(self):
-        queryset = Book.objects.all()
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'pk'
+    
+    ' Метод для получения всех книг определенной категории и ее подкатегорий при наличии'
+    @action(methods=['get'], detail=True)
+    def get_books_category_sub(self, request, pk=None):
         
-        title = self.request.query_params.get('title')
-        author = self.request.query_params.get('author')
-        status = self.request.query_params.get('status')
+        # найти категорию книги по pk 
+        category=self.get_object()
+        # category=Category.objects.get(id=pk)
         
-        if title is not None:
-            queryset = queryset.filter(book__title=title)
+        # подкатегории по категории
+        subcategories = Category.objects.filter(title=category) 
+        
+        if subcategories.exists():
             
-        if author is not None:
-            queryset = queryset.filter(book__author=author)
+            # книги по данной категории + книги по подкатегориям
+            query_books = Book.objects.filter(Q(categories=category), Q(categories=subcategories))
             
-        if status is not None:
-            queryset = queryset.filter(book__status=status)
-        
-        return queryset
+        else:
+            
+            # Получение книг по категории
+            query_books = Book.objects.filter(categories=category) 
+            
+        return Response({'books': query_books})
     
-    # def get(self, request, format=None):
-    #     books = [book.name for book in Book.objects.all()]
-    #     return Response(books)
-    
-class BookList(generics.ListAPIView):
-    """ View для получения списка всех книг с фильтрацией по названию, автору, статусу и дате публикации """
+
+class BookViewSet(viewsets.ReadOnlyModelViewSet):
+    """ Viewset для получения списка всех книг и одной книги """
     
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['title', 'author', 'status', 'publication_date']
+    lookup_field = 'pk'
     
-
-class SingleBookView(generics.RetrieveAPIView):
-    """ View для получения одной книги  """
     
-    ''' На странице одной книги передавать список из 5 книг, которые находятся в той же категории'''
-    queryset = Book.objects.all()
-    serializer_class = BookSerializer
-
+    ''' На странице одной книги передается список не менее из 5 книг, которые находятся в той же категории'''
+    @action(methods=['get'], detail=True)
+    def get_books_same_category(self, request, pk=None):
+        
+        # найти категорию книги по pk 
+        target_category = self.get_object()
+        # target_category = Category.objects.get(pk=pk)
+        
+        # не менее 5 книг с такой же категорией 
+        same_category_books = Book.objects.filter(
+            categories=target_category).exclude(pk=pk)[:5]
+        
+        return Response({'books': same_category_books})
+    
 '''
 1. Фильтрация по названию
 2. Фильтрация по автору

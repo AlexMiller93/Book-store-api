@@ -1,24 +1,20 @@
-from django.urls import path
-from books.views import (
-    get_all_books_view,
-    get_books_one_category_view, 
-    get_current_category_view,
-    get_book_view,
-    BookList,
-    ListBooks,
-    SingleBookView
-    )
+from django.urls import include, path
+from rest_framework import routers
 
-app_name = "books"
+from books.views import CategoryViewSet, BookViewSet
+
+router = routers.SimpleRouter()
+
+router.register(r'books', BookViewSet, basename='books')
+router.register(r'categories', CategoryViewSet, basename='category')
+
+# api/v1/books - все книги
+# api/v1/books/{pk}/get_books_same_category - книга по ключу + 5 книг той же категории 
+
+# api/v1/categories - все категории
+# api/v1/categories/{pk}/get_books_category_sub/ - книги одной категории + книги из подкатегорий
 
 urlpatterns = [
-    path('api/books', ListBooks.as_view(), name='list_books'),
-    path('api/books/<int:pk>', SingleBookView.as_view(), name='list_books'),
+    path('api/v1/', include(router.urls)),
     
-    
-    
-    # path('api/books', get_all_books_view, name='all_books'),
-    path('api/<int:category_id>', get_books_one_category_view, name='get_books_one_category'),
-    path('api/category/<int:category_id>/', get_current_category_view, name='get_current_category'),
-    path('api/<int:book_id>', get_book_view, name='get_book'),
 ]
