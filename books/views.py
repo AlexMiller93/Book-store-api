@@ -2,10 +2,12 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
+from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Q
 
 from books.models import Book, Category
 from books.serializers import BookSerializer, CategorySerializer
+from books.paginations import CustomPagination
 
 # Class based views
 
@@ -15,6 +17,8 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'pk'
+    pagination_class = CustomPagination
+    
     
     ' Метод для получения всех книг определенной категории и ее подкатегорий при наличии'
     @action(methods=['get'], detail=True)
@@ -46,7 +50,9 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     lookup_field = 'pk'
-    
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['title', 'authors', 'status', 'publication_date']
+    pagination_class = CustomPagination
     
     ''' На странице одной книги передается список не менее из 5 книг, которые находятся в той же категории'''
     @action(methods=['get'], detail=True)
