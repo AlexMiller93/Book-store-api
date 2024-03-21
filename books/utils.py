@@ -12,7 +12,7 @@ def clean_string(input_str:str) -> str:
     
     # удаление кавычек "" и дефисов --
     if '\"' in formatted_str:
-        print('кавычки есть')
+        # print('кавычки есть')
         formatted_str.replace("\"", "\''")
         
     # TODO: дефисы не заменяются на другие символы в строке
@@ -29,17 +29,17 @@ def divide_authors(lst:list) -> list:
     разбивает строку на две составляющих, 
     возвращает список с 2 строками без пробелов
     """
-    
-    for item in lst:
-        if 'with'in item:
-            author_1, author_2 = item.split(' with ')
-            lst.append(author_1.strip())
-            lst.append(author_2.strip())
-            lst.remove(item)
+    if len(lst) > 1:
+        for item in lst:
+            if 'with'in item:
+                author_1, author_2 = item.split('with')
+                lst.append(author_1.strip())
+                lst.append(author_2.strip())
+                lst.remove(item)
             
     return lst
         
-def clean_list(lst: list) -> list:
+def clean_list(lst: list) -> str:
     
     """ 
     Функция удаляет из списка пустые элементы, в списках где больше одного элемента 
@@ -47,8 +47,10 @@ def clean_list(lst: list) -> list:
     """
     
     if len(lst) > 1:
-        return list(filter(None, lst))
-    return lst
+        # return list(filter(None, lst))
+        return ' '.join(list(filter(None, lst)))
+    
+    return ' '.join(lst)
 
 def is_correct_isbn(number:int) -> bool:
     

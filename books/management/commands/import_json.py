@@ -11,24 +11,20 @@ from books.utils import (
     clean_date_format
     )
 
+from books.parsers import parse_json_from_url
+
+URL = "https://gitlab.grokhotov.ru/hr/python-test-vacancy/-/raw/master/books.json"
 
 class Command(BaseCommand):
     help = 'Загрузка данных в базу данных из json файла'
 
-    # !! https://metanit.com/python/django/5.7.php
-
     def handle(self, *args, **kwargs):
         try:
-            # TODO: заменить на ссылку из гитлаба
-            with open('data/books.json', 'r', encoding='utf8') as file:
-                data = json.load(file)
-                
-                # for item in data:
-                
-                # item = data[0] # cat, authors - list of items
-                
-                item = data[9] # cat, authors - one item
-                
+            
+            json_data = parse_json_from_url(URL)
+            
+            for item in json_data:
+            
                 # парсинг данных из json файла
                 title = item.get('title')
                 
@@ -58,34 +54,36 @@ class Command(BaseCommand):
                     description=description,
                     status=status,
                 )
+                
+                # authors json -> [''] or ['', '']
+                # categories json -> [] or[''] or ['', '']
+                
+                
                 # ['', ''] - ['']
                 
                 # список авторов
                 authors_data = clean_list(divide_authors(item.get('authors', []))) # list
                 # 
                 
-                author_value = ''.join(authors_data)
-                print(author_value)
+                # author_value = ''.join(authors_data)
+                # print(author_value)
                 
-                # if authors_data is not None:
-                if len(authors_data) > 1:
-                    author = [Author.objects.create(name=author) for author in authors_data]
-                else:
-                    author = Author.objects.create(name=authors_data)
+                # # if authors_data is not None:
+                # if len(authors_data) > 1:
+                #     author = [Author.objects.create(name=author) for author in authors_data]
+                # else:
+                #     author = Author.objects.create(name=authors_data)
                 
                 # список категорий
                 categories_items = clean_list(item.get('categories', []))
                 
-                
-                
-                
-                # if categories_items is not None:
-                #     if len(categories_items) > 1:
-                #         category = [Category.objects.create(title=category) for category in categories_items]
-                #     else:
-                #         category = Category.objects.create(title=categories_items) 
-                # else:  
-                #     category = 'New books'
+                if categories_items is not None:
+                    if len(categories_items) > 1:
+                        category = [Category.objects.create(title=category) for category in categories_items]
+                    else:
+                        category = Category.objects.create(title=categories_items) 
+                else:  
+                    category = 'New books'
                 
                 
                 
@@ -120,14 +118,14 @@ class Command(BaseCommand):
                 # сохраним объект
                 book.save()
                 print(f'Book object: {book}')
-                print(f'Author object: {author}')
-                # print(f'Category object: {category}\n')
+                # print(f'Author object: {author}')
+                print(f'Category object: {category}\n')
                 
                 # book.authors.set(author) # for many queryset items
                 # book.categories.set(category) # for many queryset items
                 
-                book.authors.add(author) # for one queryset item
-                # book.categories.add(category) # for one queryset item
+                # book.authors.add(author) # for one queryset item
+                book.categories.add(category) # for one queryset item
                 
                 book.save()
                 # print(f'Book object after adding authors and cat: {book}')
