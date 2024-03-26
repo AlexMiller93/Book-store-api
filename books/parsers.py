@@ -7,7 +7,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f%z'
 DATE_TYPE_NAME = '$date'
 DATE_OBJ_KEYS = [DATE_TYPE_NAME]
 
-def decode_dates(obj: Dict[str]) -> Dict[str]:
+def decode_dates(obj):
     """ 
     Функция проверяет ключи в словаре на соответствие формату, 
     парсит дату и изменяет ее согласно формату,

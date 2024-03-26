@@ -49,3 +49,14 @@ def clean_isbn(isbn: str) -> str | None:
     if len(result) not in (10, 13):
         return None
     return result
+
+def check_is_digit(raw_pages_number:str) -> int | None:
+    
+    try:
+        pages_number = int(raw_pages_number)
+    except ValueError:
+        pages_number = None
+    if pages_number == 0:
+        pages_number = None
+    return pages_number
+        
