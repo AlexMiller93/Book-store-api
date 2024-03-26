@@ -46,13 +46,13 @@ class Book(models.Model):
         метод get_remote_image для сохранения фотографий в БД по url
     """
     title = models.CharField(max_length=255, help_text='Название книги', )
-    isbn = models.CharField(max_length=255, help_text='Код ISBN')
-    pages_number = models.PositiveIntegerField(blank=True, help_text='Количество страниц в книге') # 0 -> None
-    publication_date = models.DateField(blank=True, help_text='Дата публикации книги')
-    image_link = models.URLField(blank=True, help_text='Ссылка на фото книги')
-    image = models.ImageField(blank=True, upload_to=f'images/{isbn}/', help_text='Фотография книги')
-    summary = models.TextField(blank=True, help_text='Описание книги')
-    description = models.TextField(blank=True, help_text='Подробное описание книги')
+    isbn = models.CharField(max_length=13, help_text='Код ISBN', null=True, blank=True)
+    pages_number = models.PositiveIntegerField(blank=True, null=True, help_text='Количество страниц в книге') # 0 -> None
+    publication_date = models.DateField(blank=True, null=True, help_text='Дата публикации книги')
+    image_link = models.URLField(blank=True, null=True, help_text='Ссылка на фото книги')
+    image = models.ImageField(blank=True, null=True, upload_to=f'images/{isbn}/', help_text='Фотография книги')
+    summary = models.TextField(blank=True, null=True, help_text='Описание книги')
+    description = models.TextField(blank=True, null=True, help_text='Подробное описание книги')
     status = models.CharField(max_length=8, help_text='Статус книги')
     
     authors = models.ManyToManyField(

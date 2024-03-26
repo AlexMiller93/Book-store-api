@@ -1,78 +1,51 @@
+from typing import List
 
-def clean_string(input_str:str) -> str:
+
+def clean_string(input_str:str) -> str | None:
+    
     """ 
     Функция убирает лишние пробелы из строки 
-    и заменяет лишние символы, 
+    и заменяет двойной дефис на одинарный, 
     возвращает очищенную строку
     """
     
-    # удаление лишних пробелов
-    lst = input_str.split() # список из слов
-    formatted_str = ' '.join(lst) # строка без лишних пробелов
+    if not input_str:
+        return None
     
-    # удаление кавычек "" и дефисов --
-    if '\"' in formatted_str:
-        # print('кавычки есть')
-        formatted_str.replace("\"", "\''")
-        
-    # TODO: дефисы не заменяются на другие символы в строке
-    # if '--' in formatted_str:
-    #     print('дефисы есть')
-    #     formatted_str.replace("--", ", ")
-        
+    # удаление лишних пробелов
+    words = input_str.split() # список из слов
+    formatted_str = ' '.join(words) # строка без лишних пробелов  
+    formatted_str = formatted_str.replace("--", "-")  # замена двойного дефиса на одинарный
     return formatted_str
 
-def divide_authors(lst:list) -> list:
+def clean_authors(authors: List[str]) -> List[str]:
     
     """ 
     Функция проверяет нахождение слова 'with' в элементе списка,
     разбивает строку на две составляющих, 
     возвращает список с 2 строками без пробелов
     """
-    if len(lst) > 1:
-        for item in lst:
+    
+    def _clean():
+        for item in authors:
             if 'with'in item:
                 author_1, author_2 = item.split('with')
-                lst.append(author_1.strip())
-                lst.append(author_2.strip())
-                lst.remove(item)
-            
-    return lst
-        
-def clean_list(lst: list) -> str:
+                yield author_1.strip()
+                yield author_2.strip()
+            elif item:  # если не пустая строка
+                yield item
+    return list(_clean())
     
-    """ 
-    Функция удаляет из списка пустые элементы, в списках где больше одного элемента 
-    возвращает список без пустых элементов
-    """
-    
-    if len(lst) > 1:
-        # return list(filter(None, lst))
-        return ' '.join(list(filter(None, lst)))
-    
-    return ' '.join(lst)
-
-def is_correct_isbn(number:int) -> bool:
+def clean_isbn(isbn: str) -> str | None:
     
     """ 
     Функция проверяет если в isbn все символы цифры
-    возвращает True/False
+    возвращает строку или None 
     """
     
-    try:
-        nums = int(number)
-        # TODO: можно проверить код isbn на корректность составления
-        return True
-    except Exception as e:
-        return False
-    
-def clean_date_format(date:str) -> str:
-    
-    """ 
-    Функция изменяет формат даты и оставляет только дату без времени
-    возвращает строку с датой
-    """
-    
-    date_lst = date.split('T')[0]
-    return ''.join(date_lst)
-
+    if not isbn:
+        return None
+    result = ''.join(char for char in isbn if char.isdigit())
+    if len(result) not in (10, 13):
+        return None
+    return result
