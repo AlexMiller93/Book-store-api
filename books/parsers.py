@@ -41,7 +41,6 @@ def parse_json_from_url(url) -> List[dict]:
         response.raise_for_status()
         response_text = response.text
         json_data = str_to_json(response_text)
-        print('Данные загружены')
         
         # TODO: добавить логику при невозможности загрузки по сети
     except requests.RequestException as e:

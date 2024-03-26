@@ -43,18 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "django.contrib.sites",
+    # "django.contrib.sites",
     
     # my apps
     'books',
     
     # installed packages
     'rest_framework',
-    # 'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
-    
     
 ]
 
@@ -67,7 +65,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     
-    # 'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -181,5 +178,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
     
 }
+SITE_ID=1
 
 URL = os.getenv("URL")

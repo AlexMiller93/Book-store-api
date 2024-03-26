@@ -163,4 +163,4 @@ cython_debug/
 
 read_json.py
 
-/data
+data/
