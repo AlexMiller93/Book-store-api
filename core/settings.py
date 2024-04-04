@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     
     # my apps
     'books',
+    'feedback',
     
     # installed packages
     'rest_framework',
@@ -104,8 +105,8 @@ DATABASES = {
 #             'NAME': 'books_store_db',
 #             'USER': 'postgres',
 #             'PASSWORD': os.getenv("DB_PASSWORD"),
-#             'HOST': '127.0.0.1',
-#             'PORT': '5433',
+#             'HOST': 'localhost',
+#             'PORT': '5432',
 #         }
 #     }
 
@@ -165,9 +166,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         ),
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-    ],
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.JSONRenderer',
+    # ],
     
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     

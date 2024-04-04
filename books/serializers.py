@@ -6,13 +6,13 @@ class CategorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('title', 'subcategory')
 
 class AuthorSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Author
-        fields = '__all__'
+        fields = ('name',)
 
 class BookSerializer(serializers.ModelSerializer):
     

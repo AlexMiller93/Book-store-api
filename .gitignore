@@ -162,5 +162,3 @@ cython_debug/
 /not_publish
 
 read_json.py
-
-data/
