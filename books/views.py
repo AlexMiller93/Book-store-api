@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -17,19 +18,23 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'pk'
+    search_fields = ['title']
     pagination_class = CustomPagination
     
     
     ' Метод для получения всех книг определенной категории и ее подкатегорий при наличии'
-    @action(methods=['get'], detail=True)
+    @action(detail=True, serializer_class=BookSerializer)
     def get_books_category_sub(self, request, pk=None):
         
         # найти категорию книги по pk 
-        category=self.get_object()
-        # category=Category.objects.get(id=pk)
+        try:
+            category=self.get_object()
+        # category=Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response({"error": "Категория не найдена."}, status=404)
         
         # подкатегории по категории
-        subcategories = Category.objects.filter(title=category) 
+        subcategories = self.queryset.filter(subcategory=category) 
         
         if subcategories.exists():
             # книги по данной категории + книги по подкатегориям
@@ -38,8 +43,14 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             # Получение книг по категории
             query_books = Book.objects.filter(categories=category) 
-            
-        return Response({'books': query_books})
+        
+        # # Получение книг по категории
+        # query_books = Book.objects.filter(categories=category) 
+        
+        serializer = self.get_serializer(query_books, many=True)
+        
+        return Response(serializer.data)
+        # return Response({'books': query_books})
     
 
 class BookViewSet(viewsets.ReadOnlyModelViewSet):
@@ -49,7 +60,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = BookSerializer
     lookup_field = 'pk'
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['title', 'authors', 'status', 'publication_date']
+    filterset_fields = ['title', 'authors', 'status', 'publication_date', 'categories']
     search_fields = ['title']
     pagination_class = CustomPagination
     
@@ -67,18 +78,26 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
 
     
     ''' На странице одной книги передается список не менее из 5 книг, которые находятся в той же категории'''
-    @action(methods=['get'], detail=True)
+    @action(detail=True)
     def get_books_same_category(self, request, pk=None):
         
         # найти категорию книги по pk 
-        target_category = self.get_object()
+        try:
+            target_category = self.get_object()
         # target_category = Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response({"error": "Категория не найдена."}, status=404)
+
+        # category = Category.objects.get(title=target_category)
         
         # не менее 5 книг с такой же категорией 
         same_category_books = Book.objects.filter(
-            categories=target_category).exclude(pk=pk)[:5]
+            categories=target_category)
         
-        return Response({'books': same_category_books})
+        serializer = self.get_serializer(same_category_books, many=True)
+        
+        return Response(serializer.data)
+        # return JsonResponse({'books': same_category_books})
     
 '''
 1. Фильтрация по названию

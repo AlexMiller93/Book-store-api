@@ -162,3 +162,6 @@ cython_debug/
 /not_publish
 
 read_json.py
+
+
+/.mypy_cache
