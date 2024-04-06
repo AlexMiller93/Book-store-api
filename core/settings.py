@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -44,17 +43,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # "django.contrib.sites",
-    
+
     # my apps
     'books',
-    'feedback',
-    
+    # 'feedback',
+
     # installed packages
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
     'django_filters',
-    
+
 ]
 
 MIDDLEWARE = [
@@ -65,7 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -146,7 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [ BASE_DIR / "static" ]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = "static_root"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = "media_root"
@@ -169,16 +168,17 @@ REST_FRAMEWORK = {
     # 'DEFAULT_RENDERER_CLASSES': [
     #     'rest_framework.renderers.JSONRenderer',
     # ],
-    
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    
+
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'],
+
     'EXCEPTION_HANDLER': 'core.exceptions.core_exception_handler',
     'NON_FIELD_ERRORS_KEY': 'error',
-    
+
     'DEFAULT_PAGINATION_CLASS': 'books.paginations.CustomPagination',
     'PAGE_SIZE': 10
-    
+
 }
-SITE_ID=1
+SITE_ID = 1
 
 URL = os.getenv("URL")
