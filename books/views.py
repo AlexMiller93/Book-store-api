@@ -80,11 +80,13 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
             if include_parent_categories:
 
                 # находим родителя
-                parent_categories = Category.objects.filter(
-                    parent_category_id=category.id).order_by('title')
+                child_categories = Category.objects.filter(
+                    subcategory_id=category.id).order_by('title')
+                
+                print(f'Child categories for category {category}: {child_categories}\n')
 
                 # добавляем в список
-                include_category_ids = [cat.id for cat in parent_categories]
+                include_category_ids = [cat.id for cat in child_categories]
             else:
                 include_category_ids = []
 

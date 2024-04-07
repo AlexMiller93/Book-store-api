@@ -8,7 +8,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         depth = 1
-        fields = ('id', 'title', 'parent_category')
+        fields = ('id', 'title', 'subcategory')
 
 
 class AuthorSerializer(serializers.ModelSerializer):

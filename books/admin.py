@@ -6,9 +6,9 @@ from books.models import Book, Category, Author
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['title', 'parent_category']
+    list_display = ['title', 'subcategory']
     ordering = ('title',)
-    search_fields = ('title', 'parent_category')
+    search_fields = ('title', 'subcategory')
 
 
 @admin.register(Author)

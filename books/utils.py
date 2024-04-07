@@ -59,7 +59,7 @@ def clean_page_number(raw_pages_number: str) -> int | None:
     try:
         pages_number = int(raw_pages_number)
     except ValueError:
-        pages_number = None
-    if pages_number == 0:
-        pages_number = None
+        return None
+    if pages_number <= 0:
+        return None
     return pages_number

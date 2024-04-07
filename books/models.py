@@ -24,12 +24,12 @@ class Category(models.Model):
     title = models.CharField(
         max_length=255, blank=True, help_text='Наименование категории книг'
         )
-    parent_category = models.ForeignKey(
+    subcategory = models.ForeignKey(
         'self',
         null=True,
         blank=True,
         on_delete=models.CASCADE,
-        help_text='Вышестоящая категория книг')
+        help_text='Дочерняя категория книг')
 
     class Meta:
         ordering = ["title"]
