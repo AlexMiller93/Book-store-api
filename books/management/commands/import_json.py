@@ -47,71 +47,76 @@ class Command(BaseCommand):
                 description = clean_string(item.get('longDescription'))
                 status = item.get('status')
 
-                # TODO: загрузка изображения
+            # Проверяем наличие книги с таким же названием и isbn в базе данных
+                if not Book.objects.filter(
+                        title=item.get('title'),
+                        isbn=clean_isbn(item.get('isbn'))
+                            ).exists():
 
-                # создание экземпляра книги без авторов и категорий
-                book = Book.objects.create(
-                    title=title,
-                    isbn=isbn,
-                    pages_number=pages_number,
-                    publication_date=publication_date,
-                    image_link=image_link,
-                    summary=summary,
-                    description=description,
-                    status=status,
-                )
+                    # создание экземпляра книги без авторов и категорий
+                    book = Book.objects.create(
+                        title=title,
+                        isbn=isbn,
+                        pages_number=pages_number,
+                        publication_date=publication_date,
+                        image_link=image_link,
+                        summary=summary,
+                        description=description,
+                        status=status,
+                    )
 
-                # обработка списка авторов
-                author_names = clean_authors(item.get('authors', []))
-                for author_name in author_names:
-                    # переводим строку в формат для сравнения
-                    casefold_author_name = author_name.casefold()
+                    # обработка списка авторов
+                    author_names = clean_authors(item.get('authors', []))
+                    for author_name in author_names:
+                        # переводим строку в формат для сравнения
+                        casefold_author_name = author_name.casefold()
 
-                    # находим автора в словаре уникальных авторов
-                    author = known_authors.get(casefold_author_name)
-                    if author is None:
-                        # если данного автора не было в словаре,
-                        # то создаем объект автора
-                        author = Author.objects.create(name=author_name)
+                        # находим автора в словаре уникальных авторов
+                        author = known_authors.get(casefold_author_name)
+                        if author is None:
+                            # если данного автора не было в словаре,
+                            # то создаем объект автора
+                            author = Author.objects.create(name=author_name)
 
                         # заводим имя автора в словарь для проверки на дубликат
-                        known_authors[casefold_author_name] = author
+                            known_authors[casefold_author_name] = author
 
-                    # добавляем автора к авторам книги
-                    book.authors.add(author)
+                        # добавляем автора к авторам книги
+                        book.authors.add(author)
 
-                # обработка списка категорий
+                    # обработка списка категорий
 
-                # удаление пустых элементов из списка
-                category_names = list(filter(None, item.get('categories', [])))
-                # если у книги нет категории, то задаем категорию Новинки
-                if not category_names:
-                    category_names = ['Новинки']
+                    # удаление пустых элементов из списка
+                    category_names = list(filter(
+                        None, item.get('categories', [])))
+                    # если у книги нет категории, то задаем категорию Новинки
+                    if not category_names:
+                        category_names = ['Новинки']
 
-                for category_name in category_names:
+                    for category_name in category_names:
 
-                    # переводим строку в формат для сравнения
-                    casefold_category_name = category_name.casefold()
+                        # переводим строку в формат для сравнения
+                        casefold_category_name = category_name.casefold()
 
-                    # находим категорию в словаре уникальных категорий
-                    category = known_categories.get(casefold_category_name)
-                    if category is None:
-                        # если данной категории не было в словаре,
-                        # то создаем объект категории
-                        category = Category.objects.create(title=category_name)
+                        # находим категорию в словаре уникальных категорий
+                        category = known_categories.get(casefold_category_name)
+                        if category is None:
+                            # если данной категории не было в словаре,
+                            # то создаем объект категории
+                            category = Category.objects.create(title=category_name)
 
                         # заводим категорию в словарь для проверки на дубликат
-                        known_categories[casefold_category_name] = category
+                            known_categories[casefold_category_name] = category
 
-                    # добавляем автора к авторам книги
-                    book.categories.add(category)
+                        # добавляем автора к авторам книги
+                        book.categories.add(category)
 
-                # сохраняем объект книги
-                book.save()
+                    # сохраняем объект книги
+                    book.save()
 
-            # вывод об успешной загрузке данных в БД
-            self.stdout.write(self.style.SUCCESS(
-                "Данные успешно загружены в базу!"))
+                # вывод об успешной загрузке данных в БД
+                self.stdout.write(self.style.SUCCESS(
+                    "Данные успешно загружены в базу!"))
 
         # отображение ошибки в случае сбоя загрузки
         except Exception as e:

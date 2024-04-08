@@ -1,7 +1,9 @@
 import datetime
 import json
+
 from typing import List
 import requests
+
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f%z'
 DATE_TYPE_NAME = '$date'
