@@ -163,5 +163,3 @@ cython_debug/
 
 read_json.py
 
-
-/.mypy_cache

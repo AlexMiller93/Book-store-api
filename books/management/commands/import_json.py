@@ -47,7 +47,7 @@ class Command(BaseCommand):
                 description = clean_string(item.get('longDescription'))
                 status = item.get('status')
 
-            # Проверяем наличие книги с таким же названием и isbn в базе данных
+                # Проверяем наличие книги с таким же названием и isbn в бд
                 if not Book.objects.filter(
                         title=item.get('title'),
                         isbn=clean_isbn(item.get('isbn'))
@@ -68,12 +68,14 @@ class Command(BaseCommand):
                     # обработка списка авторов
                     author_names = clean_authors(item.get('authors', []))
                     for author_name in author_names:
+
                         # переводим строку в формат для сравнения
                         casefold_author_name = author_name.casefold()
 
                         # находим автора в словаре уникальных авторов
                         author = known_authors.get(casefold_author_name)
                         if author is None:
+
                             # если данного автора не было в словаре,
                             # то создаем объект автора
                             author = Author.objects.create(name=author_name)
@@ -89,6 +91,7 @@ class Command(BaseCommand):
                     # удаление пустых элементов из списка
                     category_names = list(filter(
                         None, item.get('categories', [])))
+
                     # если у книги нет категории, то задаем категорию Новинки
                     if not category_names:
                         category_names = ['Новинки']
@@ -101,9 +104,11 @@ class Command(BaseCommand):
                         # находим категорию в словаре уникальных категорий
                         category = known_categories.get(casefold_category_name)
                         if category is None:
+
                             # если данной категории не было в словаре,
                             # то создаем объект категории
-                            category = Category.objects.create(title=category_name)
+                            category = Category.objects.create(
+                                title=category_name)
 
                         # заводим категорию в словарь для проверки на дубликат
                             known_categories[casefold_category_name] = category

@@ -3,8 +3,12 @@ from rest_framework.decorators import action
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from books.models import Book, Category
-from books.serializers import BookSerializer, CategorySerializer
+from books.models import Book, Category, Feedback
+from books.serializers import (
+    BookSerializer,
+    CategorySerializer,
+    FeedbackSerializer
+    )
 from books.paginations import CustomPagination
 
 # Class based views
@@ -102,11 +106,8 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
         return self.get_paginated_response(serializer.data)
 
 
-'''
-1. Фильтрация по названию
-2. Фильтрация по автору
-3. Фильтрация по статусу
-4. Фильтрация по дате
-5. На странице одной книги передавать список из 5 книг, которые находятся
-в той же категории
-'''
+class FeedbackViewSet(viewsets.ModelViewSet):
+    """ """
+
+    queryset = Feedback.objects.all()
+    serializer_class = FeedbackSerializer

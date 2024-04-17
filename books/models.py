@@ -2,12 +2,12 @@ import os
 from django.core.files import File
 from django.core.files.temp import NamedTemporaryFile
 from django.db import models
+from django.core.validators import RegexValidator
 
 from urllib import request
 
 from PIL import Image
 import requests
-
 
 
 class Author(models.Model):
@@ -154,3 +154,24 @@ class Book(models.Model):
 
             # Возвращаем False, если у книги нет ссылки на изображение
             return False
+
+
+class Feedback(models.Model):
+    """
+    Модель формы обратной связи с полями почта, имя, комментарий, телефон
+    """
+
+    email = models.EmailField(help_text='Почта')
+    name = models.CharField(max_length=255, help_text='Имя пользователя')
+    comment = models.TextField(help_text='Комментарий')
+    phone = models.CharField(
+        max_length=12,
+        validators=[
+            RegexValidator(
+                regex=r'^((\+7|7|8)+([0-9]){10})$',
+                message='Введите номер телефона в формате + 7 123 456 7890')
+        ],
+        help_text='Номер телефона')
+
+    def __str__(self) -> str:
+        return self.name
